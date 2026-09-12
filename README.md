@@ -1,98 +1,176 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# NestJS Authentication System
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+JWT authentication API built with NestJS, Drizzle ORM, and PostgreSQL (Neon). It covers registration, email verification, login, refresh tokens, password reset, role-based admin routes, and a simple per-user tasks API.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+Interactive docs: [http://localhost:3000/api/docs](http://localhost:3000/api/docs) (after the server is running).
 
-## Description
+## Features
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- Register with hashed passwords (bcrypt)
+- Email verification via Resend (24-hour token)
+- Login with access JWT + httpOnly refresh-token cookie
+- Token rotation on refresh
+- Logout (clears DB hash + cookie)
+- Forgot / reset password (1-hour token)
+- Global JWT guard; `@Public()` for open routes
+- Role-based access (`user` / `admin`)
+- Per-user tasks CRUD
+- Rate limiting (global + stricter login / forgot-password)
+- Swagger UI and request validation
 
-## Project setup
+## Stack
 
-```bash
-$ npm install
-```
+| Layer | Choice |
+|---|---|
+| Framework | NestJS 11 |
+| Database | PostgreSQL (Neon serverless) |
+| ORM | Drizzle |
+| Auth | `@nestjs/jwt`, bcrypt, cookies |
+| Email | Resend |
+| Docs | Swagger (`@nestjs/swagger`) |
 
-## Compile and run the project
+## Prerequisites
 
-```bash
-# development
-$ npm run start
+- Node.js 18+
+- A PostgreSQL database (Neon or local)
+- A [Resend](https://resend.com) API key for verification and reset emails
 
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
-```
-
-## Run tests
+## Setup
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npm install
 ```
 
-## Deployment
+Create a `.env` file in the project root:
 
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
+```env
+PORT=3000
+NODE_ENV=development
+APP_URL=http://localhost:3000
 
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+
+JWT_ACCESS_SECRET=change-me-access
+JWT_ACCESS_EXPIRES_IN=15m
+JWT_REFRESH_SECRET=change-me-refresh
+JWT_REFRESH_EXPIRES_IN=7d
+
+RESEND_API_KEY=re_xxxxxxxxx
+```
+
+Use long, random values for the JWT secrets. `APP_URL` is used in email links (`/api/auth/verify-email` and `/api/auth/reset-password`).
+
+Push the schema to the database:
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm run db:push
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Optional:
 
-## Resources
+```bash
+npm run db:studio    # Drizzle Studio
+npm run db:generate  # generate migrations
+npm run db:migrate   # run migrations
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+## Run
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+npm run start:dev    # watch mode
+npm run start        # production-style start
+npm run start:prod   # node dist/main (after npm run build)
+```
 
-## Support
+API base URL: `http://localhost:3000/api`
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+## Auth flow
 
-## Stay in touch
+1. **Register** — password is hashed; a verification token is stored and emailed. The user is not logged in yet (`isVerified = false`).
+2. **Verify email** — `GET /api/auth/verify-email?token=...` marks the user verified and logs them in.
+3. **Login** — only verified users. Response body includes `accessToken`; refresh token is set as cookie `refresh_token` and stored hashed in the database.
+4. **Protected routes** — send `Authorization: Bearer <accessToken>`.
+5. **Refresh** — `POST /api/auth/refresh` reads the cookie, checks it against the DB hash, then issues a new access token and a new refresh token.
+6. **Logout** — requires a valid access token; clears the refresh hash and cookie.
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+Password reset: `forgot-password` always returns a generic message (so emails cannot be enumerated). If the account exists, a 1-hour reset token is emailed.
 
-## License
+## Tokens
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+| Token | Where | Role |
+|---|---|---|
+| Access JWT | JSON body | Short-lived identity for API calls |
+| Refresh JWT | httpOnly cookie + hash in DB | Get a new access token |
+| Email verification | DB + email link | Confirm email (24h) |
+| Password reset | DB + email link | Change password (1h) |
+
+JWT payload: `sub` (user id), `email`, `role`.
+
+Refresh cookie flags: `httpOnly`, `sameSite: lax`, `secure` in production, max age 7 days.
+
+## API
+
+All routes are under `/api`. Routes without `@Public()` require a Bearer access token.
+
+### Auth
+
+| Method | Path | Auth | Notes |
+|---|---|---|---|
+| `POST` | `/auth/register` | Public | Body: `name`, `email`, `password` (min 8) |
+| `GET` | `/auth/verify-email?token=` | Public | Auto-login on success |
+| `POST` | `/auth/login` | Public | Max 5 requests / minute |
+| `POST` | `/auth/refresh` | Public (cookie) | Uses `refresh_token` cookie |
+| `POST` | `/auth/logout` | Bearer | Invalidates refresh token |
+| `GET` | `/auth/me` | Bearer | Current user profile |
+| `POST` | `/auth/forgot-password` | Public | Max 3 requests / minute. Body: `email` |
+| `POST` | `/auth/reset-password` | Public | Body: `token`, `password` (min 8) |
+
+### Tasks (authenticated user, own tasks only)
+
+| Method | Path |
+|---|---|
+| `GET` | `/tasks` |
+| `POST` | `/tasks` — body: `title`, optional `description` |
+| `PATCH` | `/tasks/:id` |
+| `DELETE` | `/tasks/:id` |
+
+### Admin (`role = admin`)
+
+| Method | Path |
+|---|---|
+| `GET` | `/admin/users` |
+| `DELETE` | `/admin/users/:id` |
+
+New users default to `role: user`. Promote a user to admin in the database if you need these routes.
+
+## Rate limiting
+
+- Global: 20 requests per minute per IP
+- Login: 5 per minute
+- Forgot password: 3 per minute
+
+## Scripts
+
+```bash
+npm run start:dev
+npm run build
+npm run lint
+npm run test
+npm run test:e2e
+npm run db:push
+```
+
+## Project layout
+
+```
+src/
+  auth/          Register, login, tokens, email
+  users/         User persistence
+  tasks/         Per-user tasks
+  admin/         Admin-only user management
+  common/        JWT + roles guards, decorators, exception filter
+  db/            Drizzle schema and client
+  main.ts        Bootstrap, cookies, Swagger, global prefix
+```
+
+Guards are registered globally in `AppModule`: throttling, JWT, then roles.
