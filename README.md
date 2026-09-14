@@ -520,12 +520,33 @@ npm run start:dev
 npm run start:prod
 npm run build
 npm run lint
-npm run test
-npm run test:e2e
 npm run db:push
 npm run db:studio
 npm run db:generate
 npm run db:migrate
 ```
+
+## Resources
+
+Official documentation for the technologies used in this project:
+
+| Resource                                                              | Description                            |
+| ---------------------------------------------------------------------- | --------------------------------------- |
+| [NestJS Documentation](https://docs.nestjs.com/)                       | Framework used to build the API         |
+| [TypeScript Documentation](https://www.typescriptlang.org/docs/)       | Language used across the project        |
+| [Drizzle ORM Documentation](https://orm.drizzle.team/docs/overview)    | ORM used to interact with PostgreSQL    |
+| [PostgreSQL Documentation](https://www.postgresql.org/docs/)           | Relational database                     |
+| [Neon Documentation](https://neon.tech/docs/introduction)              | Serverless PostgreSQL provider          |
+| [JWT Introduction](https://jwt.io/introduction)                        | JSON Web Token authentication           |
+| [@nestjs/jwt](https://github.com/nestjs/jwt)                           | JWT module used for NestJS              |
+| [bcryptjs](https://www.npmjs.com/package/bcryptjs)                     | Password hashing library                |
+| [Resend Documentation](https://resend.com/docs)                        | Transactional email provider            |
+| [Swagger / OpenAPI](https://swagger.io/docs/)                          | API documentation                       |
+| [@nestjs/swagger](https://docs.nestjs.com/openapi/introduction)        | Swagger integration for NestJS          |
+| [class-validator](https://github.com/typestack/class-validator)        | DTO validation                          |
+| [class-transformer](https://github.com/typestack/class-transformer)    | DTO transformation                      |
+| [@nestjs/throttler](https://docs.nestjs.com/security/rate-limiting)    | Rate limiting                           |
+| [cookie-parser](https://www.npmjs.com/package/cookie-parser)           | Cookie parsing middleware               |
+| [Drizzle Kit](https://orm.drizzle.team/kit-docs/overview)              | Migration and schema management CLI     |
 
 
